@@ -169,6 +169,46 @@
         "documentation": {}
     },
     {
+        "label": "pyplot",
+        "importPath": "matplotlib",
+        "description": "matplotlib",
+        "isExtraImport": true,
+        "detail": "matplotlib",
+        "documentation": {}
+    },
+    {
+        "label": "get_all_stock_prices",
+        "importPath": "db",
+        "description": "db",
+        "isExtraImport": true,
+        "detail": "db",
+        "documentation": {}
+    },
+    {
+        "label": "get_tickers",
+        "importPath": "db",
+        "description": "db",
+        "isExtraImport": true,
+        "detail": "db",
+        "documentation": {}
+    },
+    {
+        "label": "get_stock",
+        "importPath": "db",
+        "description": "db",
+        "isExtraImport": true,
+        "detail": "db",
+        "documentation": {}
+    },
+    {
+        "label": "get_pbr",
+        "importPath": "db",
+        "description": "db",
+        "isExtraImport": true,
+        "detail": "db",
+        "documentation": {}
+    },
+    {
         "label": "stock",
         "importPath": "pykrx",
         "description": "pykrx",
@@ -427,30 +467,30 @@
         "documentation": {}
     },
     {
-        "label": "get_stock",
+        "label": "LowPBR",
+        "kind": 6,
+        "importPath": "backtest",
+        "description": "backtest",
+        "peekOfCode": "class LowPBR(bt.Algo):\n    def __init__(self, pbr_df, rebalance_dates, quantile):\n        self.pbr_df = pbr_df\n        self.rebalance_dates = rebalance_dates\n        self.quantile = quantile\n    def __call__(self, target):\n        if target.now in self.rebalance_dates:\n            low_pbr_stocks = get_low_pbr_stocks(self.pbr_df.loc[target.now], self.quantile)\n            target.temp['selected'] = low_pbr_stocks\n        else:",
+        "detail": "backtest",
+        "documentation": {}
+    },
+    {
+        "label": "WeighSelected",
+        "kind": 6,
+        "importPath": "backtest",
+        "description": "backtest",
+        "peekOfCode": "class WeighSelected(bt.Algo):\n    def __init__(self, temp_key):\n        self.temp_key = temp_key\n    def __call__(self, target):\n        selected = target.temp[self.temp_key]\n        if selected is None:\n            target.temp['weights'] = None\n        else:\n            target.temp['weights'] = selected / selected.sum()\n        return True",
+        "detail": "backtest",
+        "documentation": {}
+    },
+    {
+        "label": "get_low_pbr_stocks",
         "kind": 2,
-        "importPath": "a",
-        "description": "a",
-        "peekOfCode": "def get_stock(ticker):\n    #종목코드를 입력받아서 해당 종목의 데이터를 불러옴\n    cursor.execute(\"SELECT * FROM stock_data WHERE ticker = ?\", (ticker,))\n    rows = cursor.fetchall()\n    #row를 dataframe으로 변환\n    df = pd.DataFrame(rows, columns=['코드','이름','날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '등락률', 'BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS', '기관합계', '기타법인', '개인', '외국인합계', '전체', '시가총액', '거래량2', '거래대금2', '상장주식수', '상장주식수2', '보유수량', '지분율', '한도수량', '한도소진률'])\n    #df의 index를 날짜로 변경\n    df = df.set_index('날짜')\n    #날짜를 Date로 변경\n    df.index = pd.to_datetime(df.index)",
-        "detail": "a",
-        "documentation": {}
-    },
-    {
-        "label": "conn",
-        "kind": 5,
-        "importPath": "a",
-        "description": "a",
-        "peekOfCode": "conn = sqlite3.connect('stock_data.db')\ncursor = conn.cursor()\ndef get_stock(ticker):\n    #종목코드를 입력받아서 해당 종목의 데이터를 불러옴\n    cursor.execute(\"SELECT * FROM stock_data WHERE ticker = ?\", (ticker,))\n    rows = cursor.fetchall()\n    #row를 dataframe으로 변환\n    df = pd.DataFrame(rows, columns=['코드','이름','날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '등락률', 'BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS', '기관합계', '기타법인', '개인', '외국인합계', '전체', '시가총액', '거래량2', '거래대금2', '상장주식수', '상장주식수2', '보유수량', '지분율', '한도수량', '한도소진률'])\n    #df의 index를 날짜로 변경\n    df = df.set_index('날짜')",
-        "detail": "a",
-        "documentation": {}
-    },
-    {
-        "label": "cursor",
-        "kind": 5,
-        "importPath": "a",
-        "description": "a",
-        "peekOfCode": "cursor = conn.cursor()\ndef get_stock(ticker):\n    #종목코드를 입력받아서 해당 종목의 데이터를 불러옴\n    cursor.execute(\"SELECT * FROM stock_data WHERE ticker = ?\", (ticker,))\n    rows = cursor.fetchall()\n    #row를 dataframe으로 변환\n    df = pd.DataFrame(rows, columns=['코드','이름','날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '등락률', 'BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS', '기관합계', '기타법인', '개인', '외국인합계', '전체', '시가총액', '거래량2', '거래대금2', '상장주식수', '상장주식수2', '보유수량', '지분율', '한도수량', '한도소진률'])\n    #df의 index를 날짜로 변경\n    df = df.set_index('날짜')\n    #날짜를 Date로 변경",
-        "detail": "a",
+        "importPath": "backtest",
+        "description": "backtest",
+        "peekOfCode": "def get_low_pbr_stocks(pbr, quantile=0.1):\n    return pbr.rank(pct=True).apply(lambda x: x <= quantile)\n# 전략 클래스 정의\nclass LowPBR(bt.Algo):\n    def __init__(self, pbr_df, rebalance_dates, quantile):\n        self.pbr_df = pbr_df\n        self.rebalance_dates = rebalance_dates\n        self.quantile = quantile\n    def __call__(self, target):\n        if target.now in self.rebalance_dates:",
+        "detail": "backtest",
         "documentation": {}
     },
     {
@@ -458,7 +498,7 @@
         "kind": 5,
         "importPath": "backtest",
         "description": "backtest",
-        "peekOfCode": "conn = sqlite3.connect('stock_data.db')\ncursor = conn.cursor()\n#종목코드를 입력받아서 해당 종목의 데이터를 불러옴\nticker = '005930'\n#종목코드를 입력받아서 해당 종목의 데이터를 불러옴\ncursor.execute(\"SELECT * FROM stock_data WHERE ticker = ?\", (ticker,))\nrows = cursor.fetchall()\n#row를 dataframe으로 변환\ndf = pd.DataFrame(rows, columns=['코드','이름','날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '등락률', 'BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS', '기관합계', '기타법인', '개인', '외국인합계', '전체', '시가총액', '거래량2', '거래대금2', '상장주식수', '상장주식수2', '보유수량', '지분율', '한도수량', '한도소진률'])\nprint(df)",
+        "peekOfCode": "conn = sqlite3.connect('stock_data.db')\ncursor = conn.cursor()\n# 데이터 로드 (종가 데이터와 PBR 데이터)\nprices_df = get_all_stock_prices(conn)\npbr_df = get_pbr(conn)\n# 분기별 기준 날짜 생성\nquarterly_dates = pd.date_range(prices_df.index.min(), prices_df.index.max(), freq='Q')\n# 낮은 PBR 주식 선택 함수\ndef get_low_pbr_stocks(pbr, quantile=0.1):\n    return pbr.rank(pct=True).apply(lambda x: x <= quantile)",
         "detail": "backtest",
         "documentation": {}
     },
@@ -467,34 +507,61 @@
         "kind": 5,
         "importPath": "backtest",
         "description": "backtest",
-        "peekOfCode": "cursor = conn.cursor()\n#종목코드를 입력받아서 해당 종목의 데이터를 불러옴\nticker = '005930'\n#종목코드를 입력받아서 해당 종목의 데이터를 불러옴\ncursor.execute(\"SELECT * FROM stock_data WHERE ticker = ?\", (ticker,))\nrows = cursor.fetchall()\n#row를 dataframe으로 변환\ndf = pd.DataFrame(rows, columns=['코드','이름','날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '등락률', 'BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS', '기관합계', '기타법인', '개인', '외국인합계', '전체', '시가총액', '거래량2', '거래대금2', '상장주식수', '상장주식수2', '보유수량', '지분율', '한도수량', '한도소진률'])\nprint(df)",
+        "peekOfCode": "cursor = conn.cursor()\n# 데이터 로드 (종가 데이터와 PBR 데이터)\nprices_df = get_all_stock_prices(conn)\npbr_df = get_pbr(conn)\n# 분기별 기준 날짜 생성\nquarterly_dates = pd.date_range(prices_df.index.min(), prices_df.index.max(), freq='Q')\n# 낮은 PBR 주식 선택 함수\ndef get_low_pbr_stocks(pbr, quantile=0.1):\n    return pbr.rank(pct=True).apply(lambda x: x <= quantile)\n# 전략 클래스 정의",
         "detail": "backtest",
         "documentation": {}
     },
     {
-        "label": "ticker",
+        "label": "prices_df",
         "kind": 5,
         "importPath": "backtest",
         "description": "backtest",
-        "peekOfCode": "ticker = '005930'\n#종목코드를 입력받아서 해당 종목의 데이터를 불러옴\ncursor.execute(\"SELECT * FROM stock_data WHERE ticker = ?\", (ticker,))\nrows = cursor.fetchall()\n#row를 dataframe으로 변환\ndf = pd.DataFrame(rows, columns=['코드','이름','날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '등락률', 'BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS', '기관합계', '기타법인', '개인', '외국인합계', '전체', '시가총액', '거래량2', '거래대금2', '상장주식수', '상장주식수2', '보유수량', '지분율', '한도수량', '한도소진률'])\nprint(df)",
+        "peekOfCode": "prices_df = get_all_stock_prices(conn)\npbr_df = get_pbr(conn)\n# 분기별 기준 날짜 생성\nquarterly_dates = pd.date_range(prices_df.index.min(), prices_df.index.max(), freq='Q')\n# 낮은 PBR 주식 선택 함수\ndef get_low_pbr_stocks(pbr, quantile=0.1):\n    return pbr.rank(pct=True).apply(lambda x: x <= quantile)\n# 전략 클래스 정의\nclass LowPBR(bt.Algo):\n    def __init__(self, pbr_df, rebalance_dates, quantile):",
         "detail": "backtest",
         "documentation": {}
     },
     {
-        "label": "rows",
+        "label": "pbr_df",
         "kind": 5,
         "importPath": "backtest",
         "description": "backtest",
-        "peekOfCode": "rows = cursor.fetchall()\n#row를 dataframe으로 변환\ndf = pd.DataFrame(rows, columns=['코드','이름','날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '등락률', 'BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS', '기관합계', '기타법인', '개인', '외국인합계', '전체', '시가총액', '거래량2', '거래대금2', '상장주식수', '상장주식수2', '보유수량', '지분율', '한도수량', '한도소진률'])\nprint(df)",
+        "peekOfCode": "pbr_df = get_pbr(conn)\n# 분기별 기준 날짜 생성\nquarterly_dates = pd.date_range(prices_df.index.min(), prices_df.index.max(), freq='Q')\n# 낮은 PBR 주식 선택 함수\ndef get_low_pbr_stocks(pbr, quantile=0.1):\n    return pbr.rank(pct=True).apply(lambda x: x <= quantile)\n# 전략 클래스 정의\nclass LowPBR(bt.Algo):\n    def __init__(self, pbr_df, rebalance_dates, quantile):\n        self.pbr_df = pbr_df",
         "detail": "backtest",
         "documentation": {}
     },
     {
-        "label": "df",
+        "label": "quarterly_dates",
         "kind": 5,
         "importPath": "backtest",
         "description": "backtest",
-        "peekOfCode": "df = pd.DataFrame(rows, columns=['코드','이름','날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '등락률', 'BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS', '기관합계', '기타법인', '개인', '외국인합계', '전체', '시가총액', '거래량2', '거래대금2', '상장주식수', '상장주식수2', '보유수량', '지분율', '한도수량', '한도소진률'])\nprint(df)",
+        "peekOfCode": "quarterly_dates = pd.date_range(prices_df.index.min(), prices_df.index.max(), freq='Q')\n# 낮은 PBR 주식 선택 함수\ndef get_low_pbr_stocks(pbr, quantile=0.1):\n    return pbr.rank(pct=True).apply(lambda x: x <= quantile)\n# 전략 클래스 정의\nclass LowPBR(bt.Algo):\n    def __init__(self, pbr_df, rebalance_dates, quantile):\n        self.pbr_df = pbr_df\n        self.rebalance_dates = rebalance_dates\n        self.quantile = quantile",
+        "detail": "backtest",
+        "documentation": {}
+    },
+    {
+        "label": "strategy",
+        "kind": 5,
+        "importPath": "backtest",
+        "description": "backtest",
+        "peekOfCode": "strategy = bt.Strategy('LowPBR', [\n    bt.algos.RunQuarterly(),\n    LowPBR(pbr_df, quarterly_dates, 0.1),\n    WeighSelected('selected'),\n    bt.algos.Rebalance()\n])\n# 백테스트 수행\nbacktest = bt.Backtest(strategy, prices_df)\nresult = bt.run(backtest)\n# 백테스트 결과 출력",
+        "detail": "backtest",
+        "documentation": {}
+    },
+    {
+        "label": "backtest",
+        "kind": 5,
+        "importPath": "backtest",
+        "description": "backtest",
+        "peekOfCode": "backtest = bt.Backtest(strategy, prices_df)\nresult = bt.run(backtest)\n# 백테스트 결과 출력\nresult.plot(title='Low PBR Strategy Backtest')\nplt.show()",
+        "detail": "backtest",
+        "documentation": {}
+    },
+    {
+        "label": "result",
+        "kind": 5,
+        "importPath": "backtest",
+        "description": "backtest",
+        "peekOfCode": "result = bt.run(backtest)\n# 백테스트 결과 출력\nresult.plot(title='Low PBR Strategy Backtest')\nplt.show()",
         "detail": "backtest",
         "documentation": {}
     },
@@ -613,6 +680,60 @@
         "description": "collector_multi",
         "peekOfCode": "start_date = cursor.execute(\"SELECT 날짜 FROM stock_data ORDER BY 날짜 DESC LIMIT 1\").fetchone()\nif start_date is None:\n    start_date = \"19560303\"\nwith concurrent.futures.ThreadPoolExecutor() as executor:\n    results = list(tqdm(executor.map(process_ticker, tickers, [start_date] * len(tickers), [end_date] * len(tickers)), total=len(tickers)))\nfor df in results:\n    if df is not None:\n        df.to_sql(\"stock_data\", conn, if_exists=\"append\", index=False)\nconn.commit()\nconn.close()",
         "detail": "collector_multi",
+        "documentation": {}
+    },
+    {
+        "label": "get_stock",
+        "kind": 2,
+        "importPath": "db",
+        "description": "db",
+        "peekOfCode": "def get_stock(ticker):\n    # 종목코드를 입력받아 해당 종목의 데이터를 불러옴\n    # 필요한 데이터만 가져오도록 SQL 쿼리 수정\n    cursor.execute(\"SELECT 날짜, 이름, 종가 FROM stock_data WHERE ticker = ?\", (ticker,))\n    rows = cursor.fetchall()\n    # 결과를 바로 데이터프레임으로 변환하고, 인덱스를 설정\n    df = pd.DataFrame(rows, columns=['날짜', '이름', '종가']).set_index('날짜')\n    # 날짜를 datetime으로 변경\n    df.index = pd.to_datetime(df.index)\n    # 종목 이름 추출 및 종가 열 이름 변경",
+        "detail": "db",
+        "documentation": {}
+    },
+    {
+        "label": "get_tickers",
+        "kind": 2,
+        "importPath": "db",
+        "description": "db",
+        "peekOfCode": "def get_tickers():\n    # 중복 제거 및 필요한 정보만 가져오도록 SQL 쿼리를 수정\n    cursor.execute(\"SELECT DISTINCT ticker FROM stock_data\")\n    rows = cursor.fetchall()\n    # 결과를 바로 데이터프레임으로 변환\n    df = pd.DataFrame(rows, columns=['코드'])\n    return df\ndef get_all_stock_prices(conn):\n    query = \"SELECT ticker, 날짜, 이름, 종가 FROM stock_data\"\n    # SQL 쿼리 결과를 바로 pandas 데이터프레임으로 읽어옴",
+        "detail": "db",
+        "documentation": {}
+    },
+    {
+        "label": "get_all_stock_prices",
+        "kind": 2,
+        "importPath": "db",
+        "description": "db",
+        "peekOfCode": "def get_all_stock_prices(conn):\n    query = \"SELECT ticker, 날짜, 이름, 종가 FROM stock_data\"\n    # SQL 쿼리 결과를 바로 pandas 데이터프레임으로 읽어옴\n    df = pd.read_sql(query, conn, parse_dates=['날짜'])\n    # 데이터프레임을 피벗하여 각 종목별 종가 데이터를 열로 만듦\n    prices_df = df.pivot(index='날짜', columns='이름', values='종가')\n    return prices_df\ndef get_pbr(conn):\n    query = \"SELECT ticker, 날짜, 이름, PBR FROM stock_data\"\n    # SQL 쿼리 결과를 바로 pandas 데이터프레임으로 읽어옴",
+        "detail": "db",
+        "documentation": {}
+    },
+    {
+        "label": "get_pbr",
+        "kind": 2,
+        "importPath": "db",
+        "description": "db",
+        "peekOfCode": "def get_pbr(conn):\n    query = \"SELECT ticker, 날짜, 이름, PBR FROM stock_data\"\n    # SQL 쿼리 결과를 바로 pandas 데이터프레임으로 읽어옴\n    df = pd.read_sql(query, conn, parse_dates=['날짜'])\n    # 데이터프레임을 피벗하여 각 종목별 PBR 데이터를 열로 만듦\n    pbr_df = df.pivot(index='날짜', columns='이름', values='PBR')\n    return pbr_df",
+        "detail": "db",
+        "documentation": {}
+    },
+    {
+        "label": "conn",
+        "kind": 5,
+        "importPath": "db",
+        "description": "db",
+        "peekOfCode": "conn = sqlite3.connect('stock_data.db')\ncursor = conn.cursor()\ndef get_stock(ticker):\n    # 종목코드를 입력받아 해당 종목의 데이터를 불러옴\n    # 필요한 데이터만 가져오도록 SQL 쿼리 수정\n    cursor.execute(\"SELECT 날짜, 이름, 종가 FROM stock_data WHERE ticker = ?\", (ticker,))\n    rows = cursor.fetchall()\n    # 결과를 바로 데이터프레임으로 변환하고, 인덱스를 설정\n    df = pd.DataFrame(rows, columns=['날짜', '이름', '종가']).set_index('날짜')\n    # 날짜를 datetime으로 변경",
+        "detail": "db",
+        "documentation": {}
+    },
+    {
+        "label": "cursor",
+        "kind": 5,
+        "importPath": "db",
+        "description": "db",
+        "peekOfCode": "cursor = conn.cursor()\ndef get_stock(ticker):\n    # 종목코드를 입력받아 해당 종목의 데이터를 불러옴\n    # 필요한 데이터만 가져오도록 SQL 쿼리 수정\n    cursor.execute(\"SELECT 날짜, 이름, 종가 FROM stock_data WHERE ticker = ?\", (ticker,))\n    rows = cursor.fetchall()\n    # 결과를 바로 데이터프레임으로 변환하고, 인덱스를 설정\n    df = pd.DataFrame(rows, columns=['날짜', '이름', '종가']).set_index('날짜')\n    # 날짜를 datetime으로 변경\n    df.index = pd.to_datetime(df.index)",
+        "detail": "db",
         "documentation": {}
     },
     {

@@ -1,20 +1,71 @@
 import sqlite3
 import pandas as pd
 import bt
+from matplotlib import pyplot as plt
+from db import get_all_stock_prices, get_tickers, get_stock, get_pbr
 
 #stock_data.db에 접속
 conn = sqlite3.connect('stock_data.db')
 cursor = conn.cursor()
 
-#종목코드를 입력받아서 해당 종목의 데이터를 불러옴
-ticker = '005930'
+# 데이터 로드 (종가 데이터와 PBR 데이터)
+prices_df = get_all_stock_prices(conn)
 
-#종목코드를 입력받아서 해당 종목의 데이터를 불러옴
-cursor.execute("SELECT * FROM stock_data WHERE ticker = ?", (ticker,))
-rows = cursor.fetchall()
+pbr_df = get_pbr(conn)
 
-#row를 dataframe으로 변환
-df = pd.DataFrame(rows, columns=['코드','이름','날짜', '시가', '고가', '저가', '종가', '거래량', '거래대금', '등락률', 'BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS', '기관합계', '기타법인', '개인', '외국인합계', '전체', '시가총액', '거래량2', '거래대금2', '상장주식수', '상장주식수2', '보유수량', '지분율', '한도수량', '한도소진률'])
+# 분기별 기준 날짜 생성
+quarterly_dates = pd.date_range(prices_df.index.min(), prices_df.index.max(), freq='Q')
 
-print(df)
+# 낮은 PBR 주식 선택 함수
+def get_low_pbr_stocks(pbr, quantile=0.1):
+    return pbr.rank(pct=True).apply(lambda x: x <= quantile)
+
+# 전략 클래스 정의
+class LowPBR(bt.Algo):
+    def __init__(self, pbr_df, rebalance_dates, quantile):
+        self.pbr_df = pbr_df
+        self.rebalance_dates = rebalance_dates
+        self.quantile = quantile
+
+    def __call__(self, target):
+        if target.now in self.rebalance_dates:
+            low_pbr_stocks = get_low_pbr_stocks(self.pbr_df.loc[target.now], self.quantile)
+            target.temp['selected'] = low_pbr_stocks
+        else:
+            target.temp['selected'] = None
+        return True
+
+class WeighSelected(bt.Algo):
+    def __init__(self, temp_key):
+        self.temp_key = temp_key
+
+    def __call__(self, target):
+        selected = target.temp[self.temp_key]
+        if selected is None:
+            target.temp['weights'] = None
+        else:
+            target.temp['weights'] = selected / selected.sum()
+        return True
+
+# 전략 구성
+strategy = bt.Strategy('LowPBR', [
+    bt.algos.RunQuarterly(),
+    LowPBR(pbr_df, quarterly_dates, 0.1),
+    WeighSelected('selected'),
+    bt.algos.Rebalance()
+])
+
+# 백테스트 수행
+backtest = bt.Backtest(strategy, prices_df)
+result = bt.run(backtest)
+
+# 백테스트 결과 출력
+result.plot(title='Low PBR Strategy Backtest')
+plt.show()
+
+
+
+
+
+
 
